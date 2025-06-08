@@ -29,7 +29,7 @@ const LoginPage = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        `${API_BASE_URL}/api/login`,
+        `${API_BASE_URL}/login`,
 
         {
           telepon,
