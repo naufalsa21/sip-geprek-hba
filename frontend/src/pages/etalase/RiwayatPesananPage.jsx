@@ -5,6 +5,11 @@ import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const statusWarna = {
   Selesai: "bg-green-500 text-white",
@@ -163,7 +168,10 @@ const RiwayatPesananPage = () => {
                       Selesai
                     </span>
                     <span className="text-xs text-gray-600">
-                      {dayjs(item.waktu_pesan).format("HH:mm")} WIB
+                      {dayjs(item.waktu_pesan)
+                        .tz("Asia/Jakarta")
+                        .format("HH:mm")}{" "}
+                      WIB
                     </span>
                   </div>
                 </div>
