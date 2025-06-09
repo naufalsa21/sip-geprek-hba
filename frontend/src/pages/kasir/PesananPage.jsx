@@ -4,7 +4,12 @@ import Sidebar from "../../components/SidebarKasir";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import { useNavigate } from "react-router-dom";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const statusWarna = {
   Selesai: "bg-green-500 text-white",
@@ -43,7 +48,18 @@ const PesananPage = () => {
     Dibatalkan: 4,
   };
 
+  // Filter berdasarkan hari ini (Asia/Jakarta)
+  const todayStart = dayjs().tz("Asia/Jakarta").startOf("day");
+  const todayEnd = dayjs().tz("Asia/Jakarta").endOf("day");
+
   const filtered = pesananList
+    .filter((item) => {
+      const waktuPesanJakarta = dayjs.utc(item.waktu_pesan).tz("Asia/Jakarta");
+      return (
+        waktuPesanJakarta.isAfter(todayStart) &&
+        waktuPesanJakarta.isBefore(todayEnd)
+      );
+    })
     .filter((item) =>
       filterStatus === "Semua" ? true : item.status === filterStatus
     )
@@ -51,11 +67,9 @@ const PesananPage = () => {
       item.nama_pelanggan.toLowerCase().includes(searchText.toLowerCase())
     )
     .sort((a, b) => {
-      // Urut berdasarkan prioritas status terlebih dahulu
       if (statusPrioritas[a.status] !== statusPrioritas[b.status]) {
         return statusPrioritas[a.status] - statusPrioritas[b.status];
       }
-      // Jika status sama, urutkan berdasarkan waktu_pesan terbaru (descending)
       return dayjs(b.waktu_pesan).valueOf() - dayjs(a.waktu_pesan).valueOf();
     });
 

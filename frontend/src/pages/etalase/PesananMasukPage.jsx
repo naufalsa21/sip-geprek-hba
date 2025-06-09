@@ -4,7 +4,12 @@ import Sidebar from "../../components/SidebarEtalase";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import { useNavigate } from "react-router-dom";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const statusWarna = {
   Selesai: "bg-green-500 text-white",
@@ -25,24 +30,36 @@ const PesananMasukPage = () => {
       try {
         const res = await axios.get(`${API_BASE_URL}/api/pesanan/kasir`);
 
-        const hanyaAktif = res.data.filter((item) =>
-          ["Belum Diproses", "Sedang Diproses"].includes(item.status)
-        );
+        // Tentukan waktu hari ini berdasarkan WIB
+        const todayStart = dayjs().tz("Asia/Jakarta").startOf("day");
+        const todayEnd = dayjs().tz("Asia/Jakarta").endOf("day");
 
-        // Urutkan: Belum Diproses dulu, lalu Sedang Diproses, berdasarkan waktu_pesan
-        const urutkan = hanyaAktif.sort((a, b) => {
+        // Filter pesanan dengan status aktif dan waktu_pesan hari ini (WIB)
+        const hanyaAktifHariIni = res.data.filter((item) => {
+          const waktuWIB = dayjs(item.waktu_pesan).tz("Asia/Jakarta");
+          return (
+            ["Belum Diproses", "Sedang Diproses"].includes(item.status) &&
+            waktuWIB.isAfter(todayStart) &&
+            waktuWIB.isBefore(todayEnd)
+          );
+        });
+
+        // Urutkan: Belum Diproses dulu, lalu Sedang Diproses, berdasarkan waktu_pesan (WIB)
+        const urutkan = hanyaAktifHariIni.sort((a, b) => {
           const statusOrder = {
             "Belum Diproses": 0,
             "Sedang Diproses": 1,
           };
 
-          // Urut berdasarkan status
           if (statusOrder[a.status] !== statusOrder[b.status]) {
             return statusOrder[a.status] - statusOrder[b.status];
           }
 
-          // Jika status sama, urut berdasarkan waktu pesan (dari yang paling lama)
-          return new Date(a.waktu_pesan) - new Date(b.waktu_pesan);
+          // Urut berdasarkan waktu pesan (WIB), dari yang paling lama
+          return (
+            dayjs(a.waktu_pesan).tz("Asia/Jakarta").valueOf() -
+            dayjs(b.waktu_pesan).tz("Asia/Jakarta").valueOf()
+          );
         });
 
         setDaftarPesanan(urutkan);
@@ -163,7 +180,10 @@ const PesananMasukPage = () => {
                       {item.status}
                     </span>
                     <span className="text-xs text-gray-600">
-                      {dayjs(item.waktu_pesan).format("HH:mm")} WIB
+                      {dayjs(item.waktu_pesan)
+                        .tz("Asia/Jakarta")
+                        .format("HH:mm")}{" "}
+                      WIB
                     </span>
                   </div>
                 </div>

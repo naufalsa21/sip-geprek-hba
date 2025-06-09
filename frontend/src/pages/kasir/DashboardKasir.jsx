@@ -4,6 +4,11 @@ import Header from "../../components/Header";
 import Sidebar from "../../components/SidebarKasir";
 import axios from "axios";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const DashboardKasir = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -16,14 +21,24 @@ const DashboardKasir = () => {
     "Sedang Diproses": 2,
   };
 
+  // Tentukan start dan end hari ini di timezone Asia/Jakarta
+  const todayStart = dayjs().tz("Asia/Jakarta").startOf("day");
+  const todayEnd = dayjs().tz("Asia/Jakarta").endOf("day");
+
   useEffect(() => {
     const fetchPesanan = async () => {
       try {
         const res = await axios.get(`${API_BASE_URL}/api/pesanan/kasir`);
-        // Filter status yang sesuai
-        let data = res.data.filter((item) =>
-          ["Belum Diproses", "Sedang Diproses"].includes(item.status)
-        );
+
+        // Filter status dan filter waktu_pesan agar hanya hari ini sesuai timezone Jakarta
+        let data = res.data.filter((item) => {
+          const waktuPesan = dayjs(item.waktu_pesan).tz("Asia/Jakarta");
+          return (
+            ["Belum Diproses", "Sedang Diproses"].includes(item.status) &&
+            waktuPesan.isBetween(todayStart, todayEnd, null, "[]")
+          );
+        });
+
         // Sorting: prioritas status lalu waktu pesan terbaru
         data.sort((a, b) => {
           if (statusPrioritas[a.status] !== statusPrioritas[b.status]) {
@@ -41,7 +56,7 @@ const DashboardKasir = () => {
       }
     };
     fetchPesanan();
-  }, []);
+  }, [API_BASE_URL, todayStart, todayEnd]);
 
   const getStatusBadge = (status) => {
     const styleMap = {
@@ -125,7 +140,11 @@ const DashboardKasir = () => {
                           {item.status}
                         </span>
                         <span className="text-xs text-gray-600">
-                          {dayjs(item.waktu_pesan).format("HH:mm")} WIB
+                          {dayjs
+                            .utc(item.waktu_pesan)
+                            .tz("Asia/Jakarta")
+                            .format("HH:mm")}{" "}
+                          WIB
                         </span>
                       </div>
                     </div>

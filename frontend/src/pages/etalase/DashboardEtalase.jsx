@@ -6,6 +6,11 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const DashboardEtalase = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -22,10 +27,12 @@ const DashboardEtalase = () => {
       try {
         const res = await axios.get(`${API_BASE_URL}/api/pesanan/kasir`);
 
-        // Sort ascending berdasarkan waktu_pesan (dari yang paling lama ke yang terbaru)
-        const sortedData = res.data.sort(
-          (a, b) => new Date(a.waktu_pesan) - new Date(b.waktu_pesan)
-        );
+        // Konversi waktu_pesan ke WIB (UTC+7) dan sort ascending
+        const sortedData = res.data.sort((a, b) => {
+          const waktuA = dayjs.utc(a.waktu_pesan).tz("Asia/Jakarta");
+          const waktuB = dayjs.utc(b.waktu_pesan).tz("Asia/Jakarta");
+          return waktuA.valueOf() - waktuB.valueOf();
+        });
 
         setDaftarPesanan(sortedData);
       } catch (err) {
@@ -148,7 +155,11 @@ const DashboardEtalase = () => {
                       {item.status}
                     </span>
                     <span className="text-xs text-gray-600">
-                      {dayjs(item.waktu_pesan).format("HH:mm")} WIB
+                      {dayjs
+                        .utc(item.waktu_pesan)
+                        .tz("Asia/Jakarta")
+                        .format("HH:mm")}{" "}
+                      WIB
                     </span>
                   </div>
                 </div>
