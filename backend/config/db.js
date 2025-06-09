@@ -14,7 +14,7 @@ db.connect((err) => {
     console.error("❌ Koneksi database gagal:", err);
   } else {
     console.log("✅ Terhubung ke database MySQL");
-    db.query("SET time_zone = '+07:00';", (err) => {
+    db.query("SET time_zone = '-01:00';", (err) => {
       if (err) {
         console.error("❌ Gagal set timezone session:", err);
       } else {
