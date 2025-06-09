@@ -30,8 +30,22 @@ const RiwayatPesananPage = () => {
       try {
         const res = await axios.get(`${API_BASE_URL}/api/pesanan/kasir`);
         console.log("Data pesanan dari API:", res.data);
-        const dataSelesai = res.data.filter((p) => p.status === "Selesai");
-        setPesanan(dataSelesai);
+
+        // Waktu hari ini (WIB)
+        const todayStart = dayjs().tz("Asia/Jakarta").startOf("day");
+        const todayEnd = dayjs().tz("Asia/Jakarta").endOf("day");
+
+        // Filter hanya yang status 'Selesai' dan waktu_pesan hari ini (WIB)
+        const dataSelesaiHariIni = res.data.filter((p) => {
+          const waktuWIB = dayjs(p.waktu_pesan).tz("Asia/Jakarta");
+          return (
+            p.status === "Selesai" &&
+            waktuWIB.isAfter(todayStart) &&
+            waktuWIB.isBefore(todayEnd)
+          );
+        });
+
+        setPesanan(dataSelesaiHariIni);
       } catch (err) {
         console.error("Gagal mengambil data pesanan:", err);
       }
