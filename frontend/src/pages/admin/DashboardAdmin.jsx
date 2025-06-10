@@ -1,5 +1,4 @@
 import React, { useState, useEffect, forwardRef } from "react";
-import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import "dayjs/locale/id";
 import { registerLocale } from "react-datepicker";
@@ -12,6 +11,13 @@ import { formatTanggal, formatRentangTanggal } from "../../utils/formatDate";
 import MainLayoutKepalaToko from "../../layouts/MainLayoutKepalaToko";
 import SummaryBox from "../../components/SummaryBox";
 import GrafikTransaksiMingguan from "../../components/GrafikTransaksiMingguan";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.locale("id");
 
 registerLocale("id", id);
 dayjs.locale("id");
@@ -29,13 +35,16 @@ const DashboardAdmin = () => {
 
   // Tambah state tanggal yang dipilih di grafik
   const [tanggalTerpilih, setTanggalTerpilih] = useState(
-    dayjs().format("YYYY-MM-DD")
+    dayjs().tz("Asia/Jakarta").format("YYYY-MM-DD")
   );
 
   // Fetch ringkasan untuk tanggal terpilih
   const fetchSummary = async () => {
     try {
-      const response = await getSummary(tanggalTerpilih);
+      const tanggalWIB = dayjs(tanggalTerpilih)
+        .tz("Asia/Jakarta")
+        .format("YYYY-MM-DD");
+      const response = await getSummary(tanggalWIB);
       setSummary({
         pendapatan: Number(response.data.pendapatan) || 0,
         transaksi: response.data.transaksi || 0,
@@ -49,7 +58,9 @@ const DashboardAdmin = () => {
   // Fetch data grafik mingguan sesuai tanggalAwal
   const fetchChartData = async (startDate) => {
     try {
-      const formattedDate = dayjs(startDate).format("YYYY-MM-DD");
+      const formattedDate = dayjs(startDate)
+        .tz("Asia/Jakarta")
+        .format("YYYY-MM-DD");
       const response = await getChartData(formattedDate);
       setDataMingguan(response.data || []);
     } catch (error) {
