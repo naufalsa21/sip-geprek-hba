@@ -4,6 +4,11 @@ import Header from "../../components/Header";
 import Sidebar from "../../components/SidebarKasir";
 import axios from "axios";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const DashboardKasir = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -20,10 +25,20 @@ const DashboardKasir = () => {
     const fetchPesanan = async () => {
       try {
         const res = await axios.get(`${API_BASE_URL}/api/pesanan/kasir`);
+
+        const todayStart = dayjs().tz("Asia/Jakarta").startOf("day");
+        const todayEnd = dayjs().tz("Asia/Jakarta").endOf("day");
+
         // Filter status yang sesuai
-        let data = res.data.filter((item) =>
-          ["Belum Diproses", "Sedang Diproses"].includes(item.status)
-        );
+        let data = res.data.filter((item) => {
+          const waktuWIB = dayjs(item.waktu_pesan).tz("Asia/Jakarta");
+          return (
+            ["Belum Diproses", "Sedang Diproses"].includes(item.status) &&
+            waktuWIB.isAfter(todayStart) &&
+            waktuWIB.isBefore(todayEnd)
+          );
+        });
+
         // Sorting: prioritas status lalu waktu pesan terbaru
         data.sort((a, b) => {
           if (statusPrioritas[a.status] !== statusPrioritas[b.status]) {
@@ -40,6 +55,7 @@ const DashboardKasir = () => {
         alert("Gagal memuat data pesanan");
       }
     };
+
     fetchPesanan();
   }, []);
 
@@ -125,7 +141,10 @@ const DashboardKasir = () => {
                           {item.status}
                         </span>
                         <span className="text-xs text-gray-600">
-                          {dayjs(item.waktu_pesan).format("HH:mm")} WIB
+                          {dayjs(item.waktu_pesan)
+                            .tz("Asia/Jakarta")
+                            .format("HH:mm")}{" "}
+                          WIB
                         </span>
                       </div>
                     </div>

@@ -6,6 +6,11 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const DashboardEtalase = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -22,8 +27,20 @@ const DashboardEtalase = () => {
       try {
         const res = await axios.get(`${API_BASE_URL}/api/pesanan/kasir`);
 
+        const todayStart = dayjs().tz("Asia/Jakarta").startOf("day");
+        const todayEnd = dayjs().tz("Asia/Jakarta").endOf("day");
+
+        const dataHariIni = res.data.filter((p) => {
+          const waktuWIB = dayjs(p.waktu_pesan).tz("Asia/Jakarta");
+          return (
+            p.status === "Belum Diproses" &&
+            waktuWIB.isAfter(todayStart) &&
+            waktuWIB.isBefore(todayEnd)
+          );
+        });
+
         // Sort ascending berdasarkan waktu_pesan (dari yang paling lama ke yang terbaru)
-        const sortedData = res.data.sort(
+        const sortedData = dataHariIni.sort(
           (a, b) => new Date(a.waktu_pesan) - new Date(b.waktu_pesan)
         );
 
@@ -41,6 +58,11 @@ const DashboardEtalase = () => {
       : daftarPesanan.filter(
           (p) => p.tipe_pesanan === filterTipe && p.status === "Belum Diproses"
         );
+
+  // const filtered =
+  //   filterTipe === "Semua"
+  //     ? daftarPesanan
+  //     : daftarPesanan.filter((p) => p.tipe_pesanan === filterTipe);
 
   const statusWarna = {
     Selesai: "bg-green-500 text-white",
