@@ -3,15 +3,9 @@ const adminModel = require("../models/adminModel");
 const adminController = {
   getDashboardSummary: async (req, res) => {
     try {
-      const { start, end } = req.query;
-      if (!start || !end) {
-        return res
-          .status(400)
-          .json({ message: "Parameter 'start' dan 'end' dibutuhkan" });
-      }
-
-      const tanggal = start.split(" ")[0];
-      const data = await adminModel.getSummary(start, end);
+      const tanggal =
+        req.query.tanggal || new Date().toLocaleDateString("en-CA");
+      const data = await adminModel.getSummary(tanggal);
 
       res.json({
         transaksi: data.total_transaksi || 0,

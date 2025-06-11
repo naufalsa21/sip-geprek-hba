@@ -23,7 +23,6 @@ dayjs.locale("id");
 
 const DashboardAdmin = () => {
   const navigate = useNavigate();
-
   const [summary, setSummary] = useState({
     pendapatan: 0,
     transaksi: 0,
@@ -41,18 +40,10 @@ const DashboardAdmin = () => {
   // Fetch ringkasan untuk tanggal terpilih
   const fetchSummary = async () => {
     try {
-      const startOfDay = dayjs(tanggalTerpilih)
+      const tanggalWIB = dayjs(tanggalTerpilih)
         .tz("Asia/Jakarta")
-        .startOf("day")
-        .format("YYYY-MM-DD HH:mm:ss");
-
-      const endOfDay = dayjs(tanggalTerpilih)
-        .tz("Asia/Jakarta")
-        .endOf("day")
-        .format("YYYY-MM-DD HH:mm:ss");
-
-      const response = await getSummary(startOfDay, endOfDay);
-
+        .format("YYYY-MM-DD");
+      const response = await getSummary(tanggalWIB);
       setSummary({
         pendapatan: Number(response.data.pendapatan) || 0,
         transaksi: response.data.transaksi || 0,
@@ -66,19 +57,10 @@ const DashboardAdmin = () => {
   // Fetch data grafik mingguan sesuai tanggalAwal
   const fetchChartData = async (startDate) => {
     try {
-      const start = dayjs(startDate)
+      const formattedDate = dayjs(startDate)
         .tz("Asia/Jakarta")
-        .startOf("day")
-        .format("YYYY-MM-DD HH:mm:ss");
-
-      const end = dayjs(startDate)
-        .tz("Asia/Jakarta")
-        .add(6, "day")
-        .endOf("day")
-        .format("YYYY-MM-DD HH:mm:ss");
-
-      const response = await getChartData(start);
-
+        .format("YYYY-MM-DD");
+      const response = await getChartData(formattedDate);
       setDataMingguan(response.data || []);
     } catch (error) {
       console.error("Gagal mengambil data grafik:", error);
