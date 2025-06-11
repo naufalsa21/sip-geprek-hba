@@ -13,6 +13,11 @@ import {
   Cell,
 } from "recharts";
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const CustomCalendarButton = forwardRef(({ onClick }, ref) => (
   <button
@@ -39,9 +44,12 @@ const GrafikTransaksiMingguan = ({
     return entry.tanggalISO === tanggalTerpilih ? "#c53030" : "#718096";
   };
 
-  const rentangTanggal = `${dayjs(tanggalAwal).format(
-    "DD MMMM YYYY"
-  )} - ${dayjs(tanggalAwal).add(6, "day").format("DD MMMM YYYY")}`;
+  const rentangTanggal = `${dayjs(tanggalAwal)
+    .tz("Asia/Jakarta")
+    .format("DD MMMM YYYY")} - ${dayjs(tanggalAwal)
+    .tz("Asia/Jakarta")
+    .add(6, "day")
+    .format("DD MMMM YYYY")}`;
 
   return (
     <div className="bg-white shadow rounded-2xl p-6">
