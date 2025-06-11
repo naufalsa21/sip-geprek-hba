@@ -41,17 +41,10 @@ const DashboardAdmin = () => {
   // Fetch ringkasan untuk tanggal terpilih
   const fetchSummary = async () => {
     try {
-      const startOfDay = dayjs(tanggalTerpilih)
-        .tz("Asia/Jakarta")
-        .startOf("day")
-        .toISOString();
-      const endOfDay = dayjs(tanggalTerpilih)
-        .tz("Asia/Jakarta")
-        .endOf("day")
-        .toISOString();
+      const start = dayjs(tanggalTerpilih).tz("Asia/Jakarta").startOf("day");
+      const end = dayjs(tanggalTerpilih).tz("Asia/Jakarta").endOf("day");
 
-      const response = await getSummary(startOfDay, endOfDay); // Pastikan backend mendukung ini
-
+      const response = await getSummary({ start, end }); // asumsikan backend bisa terima range waktu
       setSummary({
         pendapatan: Number(response.data.pendapatan) || 0,
         transaksi: response.data.transaksi || 0,
@@ -65,10 +58,11 @@ const DashboardAdmin = () => {
   // Fetch data grafik mingguan sesuai tanggalAwal
   const fetchChartData = async (startDate) => {
     try {
-      const formattedDate = dayjs(startDate)
+      const formattedStart = dayjs(startDate)
         .tz("Asia/Jakarta")
+        .startOf("day")
         .format("YYYY-MM-DD");
-      const response = await getChartData(formattedDate);
+      const response = await getChartData(formattedStart);
       setDataMingguan(response.data || []);
     } catch (error) {
       console.error("Gagal mengambil data grafik:", error);
