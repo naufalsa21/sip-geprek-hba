@@ -8,8 +8,8 @@ export const getSummary = (tanggalMulai, tanggalAkhir) => {
   });
 };
 
-export const getChartData = (start, end) => {
+export const getChartData = (start) => {
   return axios.get(`${API_BASE_URL}/api/dashboard/chart`, {
-    params: { start, end },
+    params: { start },
   });
 };

@@ -1,21 +1,22 @@
 const db = require("../config/db");
 
 const adminModel = {
-  getSummary: (tanggal) => {
+  getSummary: (start, end) => {
     const query = `
       SELECT 
         COUNT(*) AS total_transaksi,
         SUM(total) AS total_pendapatan,
-        (SELECT COALESCE(SUM(jumlah), 0) 
-         FROM detail_pesanan dp
-         JOIN pesanan p ON dp.pesanan_id = p.id
-         WHERE DATE(p.waktu_pesan) = ? AND p.status = 'Selesai') AS total_menu_terjual
+        (
+          SELECT COALESCE(SUM(jumlah), 0) 
+          FROM detail_pesanan dp
+          JOIN pesanan p ON dp.pesanan_id = p.id
+          WHERE p.waktu_pesan BETWEEN ? AND ? AND p.status = 'Selesai'
+        ) AS total_menu_terjual
       FROM pesanan
-      WHERE DATE(waktu_pesan) = ? AND status = 'Selesai'
+      WHERE waktu_pesan BETWEEN ? AND ? AND status = 'Selesai'
     `;
-
     return new Promise((resolve, reject) => {
-      db.query(query, [tanggal, tanggal], (err, results) => {
+      db.query(query, [start, end, start, end], (err, results) => {
         if (err) return reject(err);
         resolve(results[0] || {});
       });

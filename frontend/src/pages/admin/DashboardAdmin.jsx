@@ -38,17 +38,20 @@ const DashboardAdmin = () => {
     dayjs().tz("Asia/Jakarta").format("YYYY-MM-DD")
   );
 
-  // Gunakan start dan end hari berdasarkan WIB
-  const todayStart = dayjs().tz("Asia/Jakarta").startOf("day");
-  const todayEnd = dayjs().tz("Asia/Jakarta").endOf("day");
-
   // Fetch ringkasan untuk tanggal terpilih
   const fetchSummary = async () => {
     try {
-      const response = await getSummary({
-        tanggalAwal: todayStart.format("YYYY-MM-DD HH:mm:ss"),
-        tanggalAkhir: todayEnd.format("YYYY-MM-DD HH:mm:ss"),
-      });
+      const startOfDay = dayjs(tanggalTerpilih)
+        .tz("Asia/Jakarta")
+        .startOf("day")
+        .format("YYYY-MM-DD HH:mm:ss");
+
+      const endOfDay = dayjs(tanggalTerpilih)
+        .tz("Asia/Jakarta")
+        .endOf("day")
+        .format("YYYY-MM-DD HH:mm:ss");
+
+      const response = await getSummary(startOfDay, endOfDay);
 
       setSummary({
         pendapatan: Number(response.data.pendapatan) || 0,
@@ -74,10 +77,7 @@ const DashboardAdmin = () => {
         .endOf("day")
         .format("YYYY-MM-DD HH:mm:ss");
 
-      const response = await getChartData({
-        tanggalAwal: start,
-        tanggalAkhir: end,
-      });
+      const response = await getChartData(start);
 
       setDataMingguan(response.data || []);
     } catch (error) {
