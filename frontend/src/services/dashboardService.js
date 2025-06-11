@@ -2,9 +2,9 @@ import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export const getSummary = (tanggal) => {
+export const getSummary = ({ startDate, endDate }) => {
   return axios.get(`${API_BASE_URL}/api/dashboard/summary`, {
-    params: { tanggal },
+    params: { startDate, endDate },
   });
 };
 
