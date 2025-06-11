@@ -41,8 +41,14 @@ const DashboardAdmin = () => {
   // Fetch ringkasan untuk tanggal terpilih
   const fetchSummary = async () => {
     try {
-      const start = dayjs(tanggalTerpilih).tz("Asia/Jakarta").startOf("day");
-      const end = dayjs(tanggalTerpilih).tz("Asia/Jakarta").endOf("day");
+      const start = dayjs(tanggalTerpilih)
+        .tz("Asia/Jakarta")
+        .startOf("day")
+        .toISOString();
+      const end = dayjs(tanggalTerpilih)
+        .tz("Asia/Jakarta")
+        .endOf("day")
+        .toISOString();
 
       const response = await getSummary({ start, end }); // asumsikan backend bisa terima range waktu
       setSummary({
