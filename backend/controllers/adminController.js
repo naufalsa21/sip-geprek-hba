@@ -1,12 +1,5 @@
 const adminModel = require("../models/adminModel");
 
-const dayjs = require("dayjs");
-const utc = require("dayjs/plugin/utc");
-const timezone = require("dayjs/plugin/timezone");
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
-
 const adminController = {
   getDashboardSummary: async (req, res) => {
     try {
@@ -33,13 +26,8 @@ const adminController = {
           .status(400)
           .json({ message: "Parameter 'start' dibutuhkan" });
 
-      const startDate = dayjs(start).tz("Asia/Jakarta").startOf("day").toDate();
-      const endDate = dayjs(start)
-        .tz("Asia/Jakarta")
-        .add(6, "day")
-        .endOf("day")
-        .toDate();
-
+      const startDate = new Date(start + "T00:00:00");
+      const endDate = new Date(startDate);
       endDate.setDate(endDate.getDate() + 6);
 
       const results = await adminModel.getWeeklyChart(startDate, endDate);
