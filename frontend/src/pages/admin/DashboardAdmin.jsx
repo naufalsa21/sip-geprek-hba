@@ -17,7 +17,6 @@ import timezone from "dayjs/plugin/timezone";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
-dayjs.locale("id");
 
 registerLocale("id", id);
 dayjs.locale("id");
@@ -41,16 +40,10 @@ const DashboardAdmin = () => {
   // Fetch ringkasan untuk tanggal terpilih
   const fetchSummary = async () => {
     try {
-      const start = dayjs(tanggalTerpilih)
+      const tanggalWIB = dayjs(tanggalTerpilih)
         .tz("Asia/Jakarta")
-        .startOf("day")
-        .toISOString();
-      const end = dayjs(tanggalTerpilih)
-        .tz("Asia/Jakarta")
-        .endOf("day")
-        .toISOString();
-
-      const response = await getSummary({ start, end }); // asumsikan backend bisa terima range waktu
+        .format("YYYY-MM-DD");
+      const response = await getSummary(tanggalWIB);
       setSummary({
         pendapatan: Number(response.data.pendapatan) || 0,
         transaksi: response.data.transaksi || 0,
@@ -64,11 +57,10 @@ const DashboardAdmin = () => {
   // Fetch data grafik mingguan sesuai tanggalAwal
   const fetchChartData = async (startDate) => {
     try {
-      const formattedStart = dayjs(startDate)
+      const formattedDate = dayjs(startDate)
         .tz("Asia/Jakarta")
-        .startOf("day")
         .format("YYYY-MM-DD");
-      const response = await getChartData(formattedStart);
+      const response = await getChartData(formattedDate);
       setDataMingguan(response.data || []);
     } catch (error) {
       console.error("Gagal mengambil data grafik:", error);
