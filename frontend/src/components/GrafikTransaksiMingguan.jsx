@@ -62,10 +62,7 @@ const GrafikTransaksiMingguan = ({
           onClick={(data) => {
             const clickedData = data?.activePayload?.[0]?.payload;
             if (clickedData) {
-              const tanggalWIB = dayjs(clickedData.tanggalISO)
-                .tz("Asia/Jakarta")
-                .format("YYYY-MM-DD");
-              setTanggalTerpilih(tanggalWIB);
+              setTanggalTerpilih(clickedData.tanggalISO);
             }
           }}
         >
