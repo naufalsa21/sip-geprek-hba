@@ -41,10 +41,17 @@ const DashboardAdmin = () => {
   // Fetch ringkasan untuk tanggal terpilih
   const fetchSummary = async () => {
     try {
-      const tanggalWIB = dayjs(tanggalTerpilih)
+      const startOfDay = dayjs(tanggalTerpilih)
         .tz("Asia/Jakarta")
-        .format("YYYY-MM-DD");
-      const response = await getSummary(tanggalWIB);
+        .startOf("day")
+        .toISOString();
+      const endOfDay = dayjs(tanggalTerpilih)
+        .tz("Asia/Jakarta")
+        .endOf("day")
+        .toISOString();
+
+      const response = await getSummary(startOfDay, endOfDay); // Pastikan backend mendukung ini
+
       setSummary({
         pendapatan: Number(response.data.pendapatan) || 0,
         transaksi: response.data.transaksi || 0,
