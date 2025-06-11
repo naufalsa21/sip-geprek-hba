@@ -15,10 +15,11 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 
-registerLocale("id", id);
-dayjs.locale("id");
 dayjs.extend(utc);
 dayjs.extend(timezone);
+
+registerLocale("id", id);
+dayjs.locale("id");
 
 const DashboardAdmin = () => {
   const navigate = useNavigate();
@@ -39,21 +40,10 @@ const DashboardAdmin = () => {
   // Fetch ringkasan untuk tanggal terpilih
   const fetchSummary = async () => {
     try {
-      const startOfDay = dayjs(tanggalTerpilih)
+      const tanggalWIB = dayjs(tanggalTerpilih)
         .tz("Asia/Jakarta")
-        .startOf("day")
-        .toISOString();
-
-      const endOfDay = dayjs(tanggalTerpilih)
-        .tz("Asia/Jakarta")
-        .endOf("day")
-        .toISOString();
-
-      const response = await getSummary({
-        startDate: startOfDay,
-        endDate: endOfDay,
-      });
-
+        .format("YYYY-MM-DD");
+      const response = await getSummary(tanggalWIB);
       setSummary({
         pendapatan: Number(response.data.pendapatan) || 0,
         transaksi: response.data.transaksi || 0,
