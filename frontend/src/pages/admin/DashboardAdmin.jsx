@@ -63,10 +63,22 @@ const DashboardAdmin = () => {
   // Fetch data grafik mingguan sesuai tanggalAwal
   const fetchChartData = async (startDate) => {
     try {
-      const formattedDate = dayjs(startDate)
+      const start = dayjs(startDate)
         .tz("Asia/Jakarta")
-        .format("YYYY-MM-DD");
-      const response = await getChartData(formattedDate);
+        .startOf("day")
+        .format("YYYY-MM-DD HH:mm:ss");
+
+      const end = dayjs(startDate)
+        .tz("Asia/Jakarta")
+        .add(6, "day")
+        .endOf("day")
+        .format("YYYY-MM-DD HH:mm:ss");
+
+      const response = await getChartData({
+        tanggalAwal: start,
+        tanggalAkhir: end,
+      });
+
       setDataMingguan(response.data || []);
     } catch (error) {
       console.error("Gagal mengambil data grafik:", error);
