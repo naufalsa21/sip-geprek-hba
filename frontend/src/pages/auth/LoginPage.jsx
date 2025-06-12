@@ -80,7 +80,7 @@ const LoginPage = () => {
             value={telepon}
             onChange={(e) => setTelepon(e.target.value)}
             className="w-full px-4 py-2 rounded-sm shadow-lg"
-            placeholder="Masukkan No. Telepon (cth:08...)"
+            placeholder="Masukkan No. Telepon"
           />
         </div>
         <div className="mb-4">
@@ -92,7 +92,7 @@ const LoginPage = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-2 rounded-sm shadow-lg"
-            placeholder="Masukkan Kata Sandi (cth:geprekhba123)"
+            placeholder="Masukkan Kata Sandi"
           />
         </div>
         <div className="mb-6 text-right">

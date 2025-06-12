@@ -7,7 +7,7 @@ const login = (req, res) => {
   if (!telepon || !password) {
     return res
       .status(400)
-      .json({ message: "Nomor telepon dan password wajib diisi" });
+      .json({ message: "Nomor Telepon dan Kata Sandi wajib diisi" });
   }
 
   authModel.findUserByPhone(telepon, async (err, user) => {
@@ -17,13 +17,13 @@ const login = (req, res) => {
     }
 
     if (!user) {
-      return res.status(401).json({ message: "Nomor telepon tidak ditemukan" });
+      return res.status(401).json({ message: "Nomor Telepon tidak ditemukan" });
     }
 
     // Gunakan bcrypt untuk validasi password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ message: "Password salah" });
+      return res.status(401).json({ message: "Kata Sandi salah" });
     }
 
     res.status(200).json({
