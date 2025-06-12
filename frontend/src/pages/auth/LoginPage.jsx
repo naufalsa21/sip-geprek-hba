@@ -14,17 +14,17 @@ const LoginPage = () => {
     e.preventDefault();
 
     if (!telepon || !password) {
-      alert("Nomor telepon dan password wajib diisi.");
+      alert("No. Telepon dan Kata Sandi wajib diisi!.");
       return;
     }
 
-    // Cek jumlah no telepon
-    // if (!/^[0-9]{10,15}$/.test(telepon)) {
-    //   alert(
-    //     "Format nomor telepon tidak valid (harus 10-15 digit angka) dan diawali dengan 08...."
-    //   );
-    //   return;
-    // }
+    //Cek jumlah no telepon
+    if (!/^[0-9]{10,15}$/.test(telepon)) {
+      alert(
+        "Format nomor telepon tidak valid (harus 10-15 digit angka) dan diawali dengan 08...."
+      );
+      return;
+    }
 
     try {
       setLoading(true);
@@ -53,7 +53,7 @@ const LoginPage = () => {
     } catch (error) {
       console.error("Login gagal:", error);
       const msg =
-        error.response?.data?.message || "Username atau password salah";
+        error.response?.data?.message || "No. Telepon atau Kata Sandi salah";
       alert(msg);
     } finally {
       setLoading(false);
@@ -80,7 +80,7 @@ const LoginPage = () => {
             value={telepon}
             onChange={(e) => setTelepon(e.target.value)}
             className="w-full px-4 py-2 rounded-sm shadow-lg"
-            placeholder="Masukkan No. Telepon"
+            placeholder="Masukkan No. Telepon (cth:08...)"
           />
         </div>
         <div className="mb-4">
@@ -92,14 +92,16 @@ const LoginPage = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-2 rounded-sm shadow-lg"
-            placeholder="Masukkan password"
+            placeholder="Masukkan Kata Sandi (cth:geprekhba123)"
           />
         </div>
         <div className="mb-6 text-right">
           <a
             href="#"
             onClick={() =>
-              alert("Silakan hubungi Kepala Toko untuk reset kata sandi Anda.")
+              alert(
+                "Silakan hubungi Kepala Toko melalui kontak berikut (082294402520) untuk reset kata sandi Anda."
+              )
             }
             className="text-[13px] text-red-700 hover:text-blue-500"
           >
@@ -121,7 +123,9 @@ const LoginPage = () => {
             <a
               href="#"
               onClick={() =>
-                alert("Silakan hubungi Kepala Toko untuk membuat akun.")
+                alert(
+                  "Silakan hubungi Kepala Toko melalui kontak berikut (082294402520) untuk membuat akun."
+                )
               }
               className="text-red-700 hover:text-blue-500"
             >
