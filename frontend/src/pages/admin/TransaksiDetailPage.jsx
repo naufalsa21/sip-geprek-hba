@@ -153,7 +153,7 @@ const TransaksiDetailPage = () => {
 
         {/* Box Cards List */}
         {loading ? (
-          <p className="text-center text-gray-500">Memuat data transaksi...</p>
+          <p className="text-center text-gray-500">Memuat Transaksi...</p>
         ) : error ? (
           <p className="text-center text-red-600 font-semibold">{error}</p>
         ) : filteredData.length === 0 ? (

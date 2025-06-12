@@ -161,7 +161,7 @@ const TambahPesananPage = () => {
         <div className="bg-white shadow rounded-md p-4 h-[300px] flex flex-col">
           <div className="overflow-y-auto space-y-3 flex-grow pr-1">
             {menuList.length === 0 ? (
-              <p className="text-sm text-gray-500">Memuat menu...</p>
+              <p className="text-sm text-gray-500">Memuat Menu...</p>
             ) : (
               daftarMenu.map((item) => (
                 <div

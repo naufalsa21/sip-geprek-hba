@@ -149,7 +149,7 @@ const MenuTerjualDetailPage = () => {
 
         {/* Konten Menu Terjual */}
         {loading ? (
-          <p>Loading...</p>
+          <p>Memuat Menu...</p>
         ) : error ? (
           <p className="text-red-600">{error}</p>
         ) : filteredMenu.length === 0 ? (
